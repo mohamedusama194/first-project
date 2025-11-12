@@ -51,7 +51,7 @@ export const updateCategory = asyncHandler(async (req, res) => {
 });
 
 // delete category
-//@route put /api/v1/categories
+//@route delete /api/v1/categories
 export const deleteCategory = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
