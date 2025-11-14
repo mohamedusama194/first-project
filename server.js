@@ -15,6 +15,12 @@ if (process.env.NODE_ENV == "development") {
 //Mount router
 app.use("/api/v1/categories", CategoryRoute);
 
+app.use((err, req, res, next) => {
+  //here case if the end point return err acces this err if not
+  //global err handling middleware
+  res.status(400).json({ err });
+});
+
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
   console.log(`App is running on port ${PORT}`);
