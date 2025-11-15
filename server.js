@@ -3,6 +3,8 @@ import dotenv from "dotenv";
 import morgan from "morgan";
 import dbConnection from "./config/database.js";
 import CategoryRoute from "./routes/categoryRoute.js";
+import ApiError from "./utils/apiError.js";
+import globalError from "./middlewares/errorMiddleware.js";
 dotenv.config({ path: "config.env" });
 dbConnection();
 const app = express();
@@ -14,12 +16,10 @@ if (process.env.NODE_ENV == "development") {
 
 //Mount router
 app.use("/api/v1/categories", CategoryRoute);
-
-app.use((err, req, res, next) => {
-  //here case if the end point return err acces this err if not
-  //global err handling middleware
-  res.status(400).json({ err });
-});
+// app.all("*", (req, res, next) => {
+//   next(new ApiError(`cant find this route ${req.originalUrl}`, 400));
+// });
+app.use(globalError);
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
