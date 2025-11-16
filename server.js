@@ -22,6 +22,14 @@ app.use("/api/v1/categories", CategoryRoute);
 app.use(globalError);
 
 const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`App is running on port ${PORT}`);
+});
+// global error unhandled for promises out of epxress
+process.on("unhandledRejection", (err) => {
+  console.error(`unhandledRejection Errors : ${err.name} | ${err.message}`);
+  server.close(() => {
+    console.error(`Shutting down ......`);
+    process.exit(1);
+  });
 });
