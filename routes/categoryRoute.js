@@ -1,5 +1,10 @@
 import express from "express";
-import { getCategoryValidation } from "../utils/validators/categoryValidator.js";
+import {
+  getCategoryValidation,
+  createCategoryValidator,
+  updateCategoryValidator,
+  deleteCategoryValidator,
+} from "../utils/validators/categoryValidator.js";
 import {
   getCategories,
   createCategory,
@@ -9,10 +14,13 @@ import {
 } from "../controllers/categoryController.js";
 const router = express.Router();
 
-router.route("/").get(getCategories).post(createCategory);
+router
+  .route("/")
+  .get(getCategories)
+  .post(createCategoryValidator, createCategory);
 router
   .route("/:id")
   .get(getCategoryValidation, getCategory)
-  .put(updateCategory)
-  .delete(deleteCategory);
+  .put(updateCategoryValidator, updateCategory)
+  .delete(deleteCategoryValidator, deleteCategory);
 export default router;
