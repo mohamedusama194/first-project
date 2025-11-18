@@ -12,7 +12,10 @@ import {
   updateCategory,
   deleteCategory,
 } from "../controllers/categoryController.js";
+import subCategoryRoute from "./subCategoryRoute.js";
 const router = express.Router();
+
+router.use("/:categoryId/subCategories", subCategoryRoute);
 
 router
   .route("/")

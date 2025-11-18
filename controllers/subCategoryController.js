@@ -3,12 +3,21 @@ import ApiError from "../utils/apiError.js";
 import slugify from "slugify";
 import subCategoryModel from "../models/subCategoryModel.js";
 
+export const createFilterObj = (req, res, next) => {
+  let filterObject = {};
+  if (req.params.categoryId) filterObject = { category: req.params.categoryId };
+  req.filterObj = filterObject;
+  next();
+};
 export const getSubCategories = asyncHandler(async (req, res) => {
   const page = req.query.page * 1 || 1;
   const limit = req.query.limit * 1 || 5;
   const skip = (page - 1) * limit;
 
-  const subCategories = await subCategoryModel.find({}).skip(skip).limit(limit);
+  const subCategories = await subCategoryModel
+    .find(filterObj)
+    .skip(skip)
+    .limit(limit);
   res
     .status(200)
     .json({ result: subCategories.length, page, data: subCategories });
@@ -24,7 +33,12 @@ export const getSubCategory = asyncHandler(async (req, res, next) => {
   res.status(200).json({ data: subCategory });
 });
 
+export const setCategoryIdForBody = (req, res, next) => {
+  if (!req.body.category) req.body.category = req.params.categoryId;
+  next();
+};
 export const createSubCategory = asyncHandler(async (req, res, next) => {
+  if (!req.body.category) req.body.category = req.params.categoryId;
   const { name, category } = req.body;
 
   const subCategory = await subCategoryModel.create({
