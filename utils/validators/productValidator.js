@@ -1,5 +1,6 @@
 import { check } from "express-validator";
 import validationMiddleware from "../../middlewares/validatiorMiddleware.js";
+import Category from "../../models/categoryModel.js";
 
 export const getProductValidation = [
   check("id").isMongoId().withMessage("invalid product id ya ray2"),
@@ -53,7 +54,14 @@ export const createProductValidator = [
     .isMongoId()
     .withMessage("invalid ID format")
     .notEmpty()
-    .withMessage("product must be belong for an category"),
+    .withMessage("product must be belong for an category")
+    .custom((categoryId) =>
+      Category.findById(categoryId).then((category) => {
+        if (!category) {
+          return Promise.reject(`no category for this id ${categoryId}`);
+        }
+      })
+    ),
   check("subcategory").optional().isMongoId().withMessage("invalid ID format"),
   check("brand").optional().isMongoId().withMessage("invalid ID format"),
   check("ratingsAverage")
