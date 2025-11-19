@@ -5,6 +5,7 @@ import dbConnection from "./config/database.js";
 import CategoryRoute from "./routes/categoryRoute.js";
 import brandRoute from "./routes/brandRoute.js";
 import SubCategoryRoute from "./routes/subCategoryRoute.js";
+import productRoute from "./routes/productRoute.js";
 import ApiError from "./utils/apiError.js";
 import globalError from "./middlewares/errorMiddleware.js";
 dotenv.config({ path: "config.env" });
@@ -20,6 +21,7 @@ if (process.env.NODE_ENV == "development") {
 app.use("/api/v1/categories", CategoryRoute);
 app.use("/api/v1/subcategories", SubCategoryRoute);
 app.use("/api/v1/brands", brandRoute);
+app.use("/api/v1/products", productRoute);
 // app.all("*", (req, res, next) => {
 //   next(new ApiError(`cant find this route ${req.originalUrl}`, 400));
 // });
