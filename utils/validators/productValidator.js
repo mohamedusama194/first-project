@@ -1,6 +1,7 @@
 import { check } from "express-validator";
 import validationMiddleware from "../../middlewares/validatiorMiddleware.js";
 import Category from "../../models/categoryModel.js";
+import subCategory from "../../models/subCategoryModel.js";
 
 export const getProductValidation = [
   check("id").isMongoId().withMessage("invalid product id ya ray2"),
@@ -62,7 +63,34 @@ export const createProductValidator = [
         }
       })
     ),
-  check("subcategory").optional().isMongoId().withMessage("invalid ID format"),
+  check("subCategories")
+    .optional()
+    .isMongoId()
+    .withMessage("invalid ID format")
+    .custom(async (subCategoryIds, { req }) => {
+      // confirm that this subcategories in DB
+      const foundSubCategories = await subCategory.find({
+        _id: { $in: subCategoryIds },
+      });
+      if (foundSubCategories.length !== subCategoryIds.length) {
+        throw new Error(`invalid subcategory IDs : ${subCategoryIds}`);
+      }
+      const subCategoriesInCategory = await subCategory.find({
+        category: req.body.category,
+      });
+      const subsIdsInCategory = subCategoriesInCategory.map((s) =>
+        s._id.toString()
+      );
+      const allExist = subCategoryIds.every((id) =>
+        subsIdsInCategory.includes(id)
+      );
+      if (!allExist) {
+        throw new Error(
+          `No subcategories belong to the specified category ${subCategoryIds}`
+        );
+      }
+      return true;
+    }),
   check("brand").optional().isMongoId().withMessage("invalid ID format"),
   check("ratingsAverage")
     .optional()
