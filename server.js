@@ -22,6 +22,12 @@ app.use("/api/v1/categories", CategoryRoute);
 app.use("/api/v1/subcategories", SubCategoryRoute);
 app.use("/api/v1/brands", brandRoute);
 app.use("/api/v1/products", productRoute);
+app.use((req, res, next) => {
+  const error = new Error("route not exist");
+  error.status = 404;
+  next(error);
+});
+
 // app.all("*", (req, res, next) => {
 //   next(new ApiError(`cant find this route ${req.originalUrl}`, 400));
 // });

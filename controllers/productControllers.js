@@ -2,20 +2,23 @@ import slugify from "slugify";
 import ProductModel from "../models/productModel.js";
 import asyncHandler from "express-async-handler";
 import ApiError from "../utils/apiError.js";
+import ApiFeatures from "../utils/apiFeatures.js";
 
 //@desc get all products
 //@route get /api/v1/products
 //@access public
-export const getProducts = asyncHandler(async (req, res) => {
-  const page = req.query.page * 1 || 1;
-  const limit = req.query.limit * 1 || 5;
-  const skip = (page - 1) * limit;
 
-  const product = await ProductModel.find({})
-    .skip(skip)
-    .limit(limit)
-    .populate({ path: "category", select: "name -_id" });
-  res.status(200).json({ result: product.length, page, data: product });
+export const getProducts = asyncHandler(async (req, res) => {
+  const apiFeatures = new ApiFeatures(ProductModel.find(), req.query)
+    .filter()
+    .limitFields()
+    .keywordSearch()
+    .sort()
+    .paginate();
+
+  const product = await apiFeatures.mongooseQuery;
+
+  res.status(200).json({ result: product.length, data: product });
 });
 
 //@desc get all products
