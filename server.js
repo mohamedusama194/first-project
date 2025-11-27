@@ -7,6 +7,7 @@ import brandRoute from "./routes/brandRoute.js";
 import SubCategoryRoute from "./routes/subCategoryRoute.js";
 import productRoute from "./routes/productRoute.js";
 import authRoute from "./routes/authRoute.js";
+import userRoute from "./routes/userRoute.js";
 import globalError from "./middlewares/errorMiddleware.js";
 dotenv.config({ path: "config.env" });
 dbConnection();
@@ -23,6 +24,7 @@ app.use("/api/v1/subcategories", SubCategoryRoute);
 app.use("/api/v1/brands", brandRoute);
 app.use("/api/v1/products", productRoute);
 app.use("/api/v1/auth", authRoute);
+app.use("/api/v1/users", userRoute);
 app.use((req, res, next) => {
   const error = new Error("route not exist");
   error.status = 404;

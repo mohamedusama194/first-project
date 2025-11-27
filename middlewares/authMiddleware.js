@@ -21,12 +21,29 @@ export const protect = asyncHandler(async (req, res, next) => {
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
   // 3) Check user exists
-  const user = await UserModel.findById(decoded.id);
+  const user = await UserModel.findById(decoded.id).select("+active");
   if (!user) {
     return next(new ApiError("User no longer exists", 401));
   }
 
+  // 4) Check account status
+  if (user.active === false) {
+    return next(new ApiError("This account is deactivated.", 403));
+  }
   // Attach user to req
   req.user = user;
   next();
 });
+
+export const allowedTo = (...roles) => {
+  return (req, res, next) => {
+    // req.user جاية من protect
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new ApiError("You are not allowed to perform this action", 403)
+      );
+    }
+
+    next();
+  };
+};
