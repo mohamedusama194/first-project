@@ -53,12 +53,6 @@ export const login = asyncHandler(async (req, res, next) => {
 
   // 2) Check user exists & select password (select:false)
   const user = await UserModel.findOne({ email }).select("+password");
-  if (!user.active) {
-    return next(
-      new ApiError("This account is deactivated. Please contact support.", 403)
-    );
-  }
-
   if (!user) {
     return next(new ApiError("Incorrect email or password", 401));
   }
