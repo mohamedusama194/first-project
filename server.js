@@ -1,3 +1,5 @@
+import path from "path";
+import { fileURLToPath } from "url";
 import express from "express";
 import dotenv from "dotenv";
 import morgan from "morgan";
@@ -9,10 +11,17 @@ import productRoute from "./routes/productRoute.js";
 import authRoute from "./routes/authRoute.js";
 import userRoute from "./routes/userRoute.js";
 import globalError from "./middlewares/errorMiddleware.js";
+
 dotenv.config({ path: "config.env" });
+//db connection
 dbConnection();
 const app = express();
+//manualy dirname for es moduels
 app.use(express.json());
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+app.use(express.static(path.join(__dirname, "uploads")));
 if (process.env.NODE_ENV == "development") {
   app.use(morgan("dev"));
   console.log(`mode : ${process.env.NODE_ENV}`);

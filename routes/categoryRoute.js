@@ -14,6 +14,7 @@ import {
   updateCategory,
   deleteCategory,
   uploadCategoryImage,
+  resizeImage,
 } from "../controllers/categoryController.js";
 
 import subCategoryRoute from "./subCategoryRoute.js";
@@ -24,10 +25,21 @@ router.use("/:categoryId/subCategories", subCategoryRoute);
 router
   .route("/")
   .get(getCategories)
-  .post(uploadCategoryImage, protect, createCategoryValidator, createCategory);
+  .post(
+    uploadCategoryImage,
+    resizeImage,
+    protect,
+    createCategoryValidator,
+    createCategory
+  );
 router
   .route("/:id")
   .get(getCategoryValidation, getCategory)
-  .put(updateCategoryValidator, updateCategory)
+  .patch(
+    uploadCategoryImage,
+    resizeImage,
+    updateCategoryValidator,
+    updateCategory
+  )
   .delete(deleteCategoryValidator, deleteCategory);
 export default router;
