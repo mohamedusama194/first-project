@@ -1,7 +1,6 @@
 import asyncHandler from "express-async-handler";
 import ApiError from "../utils/apiError.js";
 import ApiFeatures from "../utils/apiFeatures.js";
-
 export const deleteOne = (Model) =>
   asyncHandler(async (req, res, next) => {
     const { id } = req.params;
@@ -12,7 +11,6 @@ export const deleteOne = (Model) =>
     }
     res.status(204).json();
   });
-
 export const updateOne = (Model) =>
   asyncHandler(async (req, res, next) => {
     const document = await Model.findByIdAndUpdate(
@@ -27,7 +25,6 @@ export const updateOne = (Model) =>
     }
     res.status(200).json({ data: document });
   });
-
 export const createOne = (Model) =>
   asyncHandler(async (req, res) => {
     const newDocument = await Model.create(req.body);
@@ -50,12 +47,10 @@ export const getAll = (Model) =>
       .filter()
       .keywordSearch("product")
       .limitFields()
-
       .sort()
       .paginate(documentCount);
     const { mongooseQuery, paginationResult } = apiFeatures;
     const douments = await mongooseQuery;
-
     res
       .status(200)
       .json({ result: douments.length, paginationResult, data: douments });
