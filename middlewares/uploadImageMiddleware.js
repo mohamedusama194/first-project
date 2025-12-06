@@ -20,3 +20,5 @@ export const uploadSingleImage = (FieldName) =>
 
 export const uploadMixOfIamges = (arrayOfFeilds) =>
   multerOption().fields(arrayOfFeilds);
+
+export const uploadUserImage = uploadSingleImage("profileImg");
