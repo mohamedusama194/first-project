@@ -8,23 +8,37 @@ import {
   deleteUser,
   getMe,
   deleteMe,
+  resizeImage,
 } from "../controllers/userController.js";
 import { protect, allowedTo } from "../middlewares/authMiddleware.js";
-
+import {
+  updateUserPasswordValidator,
+  updateUserDataValidator,
+} from "../utils/validators/uservalidator.js";
+import { uploadUserImage } from "../middlewares/uploadImageMiddleware.js";
 const router = express.Router();
 
 router.use(protect); // user must be login
 
-router.patch("/updateMe", protect, updateMe);
-router.patch("/updateMyPassword", protect, updateMyPassword);
+router.patch(
+  "/updateMe",
+  protect,
+  uploadUserImage,
+  resizeImage,
+  updateUserDataValidator,
+  updateMe
+);
+router.patch(
+  "/updateMyPassword",
+  protect,
+  updateUserPasswordValidator,
+  updateMyPassword
+);
 router.get("/me", protect, getMe);
 router.delete("/deleteMe", protect, deleteMe);
 
 router.use(allowedTo("admin")); // this feature for admins
 
 router.get("/", getAllUsers);
-// router.get("/:id", getUser);
-// router.patch("/:id", updateUser);
-// router.delete("/:id", deleteUser);
 router.route("/:id").get(getUser).patch(updateUser).delete(deleteUser);
 export default router;
