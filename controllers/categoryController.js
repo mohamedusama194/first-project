@@ -15,13 +15,15 @@ export const uploadCategoryImage = uploadSingleImage("image");
 
 export const resizeImage = asyncHandler(async (req, res, next) => {
   const filename = `category-${uuidv4()}-${Date.now()}.jpeg`;
-  await sharp(req.file.buffer) //image processing for node
-    .resize(600, 600)
-    .toFormat("jpeg")
-    .jpeg({ quality: 80 })
-    .toFile(`${ensureFolderExists("uploads/categories")}/${filename}`);
-  //save image into db
-  req.body.image = filename;
+  if (req.file) {
+    await sharp(req.file.buffer) //image processing for node
+      .resize(600, 600)
+      .toFormat("jpeg")
+      .jpeg({ quality: 80 })
+      .toFile(`${ensureFolderExists("uploads/brands")}/${filename}`);
+    //save image into db
+    req.body.image = filename;
+  }
   next();
 });
 // get all category
