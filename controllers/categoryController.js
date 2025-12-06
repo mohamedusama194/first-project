@@ -14,15 +14,18 @@ import ensureFolderExists from "../utils/createFolder.js";
 export const uploadCategoryImage = uploadSingleImage("image");
 
 export const resizeImage = asyncHandler(async (req, res, next) => {
-  const filename = `category-${uuidv4()}-${Date.now()}.jpeg`;
   if (req.file) {
-    await sharp(req.file.buffer) //image processing for node
-      .resize(600, 600)
-      .toFormat("jpeg")
-      .jpeg({ quality: 80 })
-      .toFile(`${ensureFolderExists("uploads/brands")}/${filename}`);
-    //save image into db
-    req.body.image = filename;
+    const result = await cloudinary.uploader.upload_stream(
+      { folder: "categories" },
+      (error, uploadResult) => {
+        if (error) return next(new ApiError("Image upload failed", 500));
+
+        req.body.image = uploadResult.secure_url;
+        next();
+      }
+    );
+
+    sharp(req.file.buffer).toFormat("jpeg").pipe(result);
   }
   next();
 });
