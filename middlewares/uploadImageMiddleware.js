@@ -1,24 +1,25 @@
 import multer from "multer";
 import ApiError from "../utils/apiError.js";
 
-const multerOption = () => {
-  const multerStorage = multer.memoryStorage();
+// ---------- Multer Memory Storage ----------
+const multerStorage = multer.memoryStorage();
 
-  const multerFilter = function (req, file, cb) {
-    if (file.mimetype.startsWith("image")) {
-      cb(null, true);
-    } else {
-      cb(new ApiError("ONLY image allowed", 400), false);
-    }
-  };
-  const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
-  return upload;
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image")) {
+    cb(null, true);
+  } else {
+    cb(new ApiError("Only images allowed", 400), false);
+  }
 };
 
-export const uploadSingleImage = (FieldName) =>
-  multerOption().single(FieldName);
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
 
-export const uploadMixOfIamges = (arrayOfFeilds) =>
-  multerOption().fields(arrayOfFeilds);
+// Upload single image
+export const uploadSingleImage = (fieldName) => upload.single(fieldName);
 
-export const uploadUserImage = uploadSingleImage("profileImg");
+// Upload multiple images
+export const uploadMixOfImages = (arrayOfFields) =>
+  upload.fields(arrayOfFields);
