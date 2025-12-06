@@ -20,9 +20,8 @@ import subCategoryRoute from "./subCategoryRoute.js";
 const router = express.Router();
 
 router.use("/:categoryId/subCategories", subCategoryRoute);
-
-router.route("/").get(protect, getCategories).post(
-  protect,
+router.use(protect);
+router.route("/").get(getCategories).post(
   allowedTo("admin"),
   uploadCategoryImage,
   resizeImage,
@@ -32,14 +31,13 @@ router.route("/").get(protect, getCategories).post(
 );
 router
   .route("/:id")
-  .get(protect, getCategoryValidation, getCategory)
+  .get(getCategoryValidation, getCategory)
   .patch(
-    protect,
     allowedTo("admin"),
     uploadCategoryImage,
     resizeImage,
     updateCategoryValidator,
     updateCategory
   )
-  .delete(protect, allowedTo("admin"), deleteCategoryValidator, deleteCategory);
+  .delete(allowedTo("admin"), deleteCategoryValidator, deleteCategory);
 export default router;
