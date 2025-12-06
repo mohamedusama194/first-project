@@ -16,29 +16,27 @@ import {
 } from "../controllers/productControllers.js";
 import { protect, allowedTo } from "../middlewares/authMiddleware.js";
 const router = express.Router();
-
+router.use(protect);
 router
   .route("/")
   .post(
-    protect,
     allowedTo("admin"),
     uploadProductImages,
     resizeImage,
     createProductValidator,
     createProduct
   )
-  .get(protect, getProducts);
+  .get(getProducts);
 router
   .route("/:id")
-  .get(protect, getProductValidation, getProduct)
+  .get(getProductValidation, getProduct)
   .patch(
-    protect,
     allowedTo("admin"),
     uploadProductImages,
     resizeImage,
     updateProductValidation,
     updateProduct
   )
-  .delete(protect, allowedTo("admin"), deleteProductValidation, deleteProduct);
+  .delete(allowedTo("admin"), deleteProductValidation, deleteProduct);
 
 export default router;
