@@ -49,7 +49,7 @@ export const getUser = asyncHandler(async (req, res, next) => {
 // @desc   Get logged-in user's data
 // @route  GET /api/v1/users/me
 // @access User
-export const getMe = asyncHandler(async (req, res, next) => {
+export const getLoggedUserData = asyncHandler(async (req, res, next) => {
   const user = await UserModel.findById(req.user._id).select("-password");
 
   res.status(200).json({
@@ -84,7 +84,7 @@ export const updateUser = asyncHandler(async (req, res, next) => {
 // @desc   Update logged-in user data (NOT password)
 // @route  PATCH /api/v1/users/updateMe
 // @access User
-export const updateMe = asyncHandler(async (req, res, next) => {
+export const updateLoggedUser = asyncHandler(async (req, res, next) => {
   const { name, email, phone, profileImg } = req.body;
 
   const updatedUser = await UserModel.findByIdAndUpdate(
@@ -102,7 +102,7 @@ export const updateMe = asyncHandler(async (req, res, next) => {
 // @route  PATCH /api/v1/users/updateMyPassword
 // @access User
 
-export const updateMyPassword = asyncHandler(async (req, res, next) => {
+export const updateLoggedUsePassword = asyncHandler(async (req, res, next) => {
   const user = await UserModel.findById(req.user._id).select("+password");
 
   const isCorrect = await bcrypt.compare(
@@ -146,7 +146,7 @@ export const deleteUser = asyncHandler(async (req, res, next) => {
 // @desc   Deactivate logged-in user
 // @route  DELETE /api/v1/users/deleteMe
 // @access User
-export const deleteMe = asyncHandler(async (req, res, next) => {
+export const deleteLoggedUser = asyncHandler(async (req, res, next) => {
   await UserModel.findByIdAndUpdate(req.user._id, { active: false });
 
   res.status(204).json();

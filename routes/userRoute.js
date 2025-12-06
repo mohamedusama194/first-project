@@ -2,12 +2,12 @@ import express from "express";
 import {
   getAllUsers,
   getUser,
-  updateMyPassword,
-  updateMe,
+  updateLoggedUsePassword,
+  updateLoggedUser,
   updateUser,
   deleteUser,
-  getMe,
-  deleteMe,
+  getLoggedUserData,
+  deleteLoggedUser,
   resizeImage,
 } from "../controllers/userController.js";
 import { protect, allowedTo } from "../middlewares/authMiddleware.js";
@@ -22,23 +22,25 @@ router.use(protect); // user must be login
 
 router.patch(
   "/updateMe",
-  protect,
   uploadUserImage,
   resizeImage,
   updateUserDataValidator,
-  updateMe
+  updateLoggedUser
 );
 router.patch(
   "/updateMyPassword",
-  protect,
   updateUserPasswordValidator,
-  updateMyPassword
+  updateLoggedUsePassword
 );
-router.get("/me", protect, getMe);
-router.delete("/deleteMe", protect, deleteMe);
+router.get("/me", getLoggedUserData);
+router.delete("/deleteMe", deleteLoggedUser);
 
 router.use(allowedTo("admin")); // this feature for admins
 
-router.get("/", getAllUsers);
-router.route("/:id").get(getUser).patch(updateUser).delete(deleteUser);
+router.get("/Data", getAllUsers);
+router
+  .route("/deleteUser/:id")
+  .get(getUser)
+  .patch(updateUser)
+  .delete(deleteUser);
 export default router;
