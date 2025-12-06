@@ -16,12 +16,11 @@ import {
 } from "../controllers/brandController.js";
 import { protect, allowedTo } from "../middlewares/authMiddleware.js";
 const router = express.Router();
-
+router.use(protect);
 router
   .route("/")
-  .get(protect, getAllBrands)
+  .get(getAllBrands)
   .post(
-    protect,
     allowedTo("admin"),
     uploadBrandImage,
     resizeImage,
@@ -30,7 +29,7 @@ router
   );
 router
   .route("/:id")
-  .get(protect, getBrandValidation, getBrand)
-  .patch(protect, allowedTo("admin"), updateBrandValidator, updateBrand)
-  .delete(protect, allowedTo("admin"), deleteBrandValidator, deleteBrand);
+  .get(getBrandValidation, getBrand)
+  .patch(allowedTo("admin"), updateBrandValidator, updateBrand)
+  .delete(allowedTo("admin"), deleteBrandValidator, deleteBrand);
 export default router;
