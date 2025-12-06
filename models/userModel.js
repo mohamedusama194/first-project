@@ -5,53 +5,68 @@ const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      requried: [true, "user name is requried"],
+      required: [true, "user name is requried"],
       trim: true,
       minlength: [5, "too short user name"],
       maxlength: [30, "too long user name"],
     },
-    slug: {
-      type: String,
-      lowercase: true,
-    },
     email: {
       type: String,
-      requried: [true, "email is requried"],
+      required: [true, "email is requried"],
       unique: true,
-      loweerecase: true,
+      lowercase: true,
     },
     password: {
       type: String,
-      requried: [true, "password is requried"],
-      minlength: [6, "password must be at least 6 characters"],
+      required: [true, "password is required"],
+      minlength: [6, "password must be at least 6 char"],
       select: false,
     },
+    phone: String,
+    profileImg: String,
     role: {
       type: String,
       enum: ["user", "admin"],
       default: "user",
     },
     passwordChangedAt: Date,
+    passwordResetCode: String,
+    passwordResetExpires: Date,
+    passwordResetVerified: Boolean,
     active: {
       type: Boolean,
       select: false,
       default: true,
     },
   },
-  { timeseries: true }
+  { timestamps: true }
 );
+const setImageURL = (doc) => {
+  if (doc.profileImg) {
+    const imageUrl = `${process.env.BASE_URL}users/${doc.profileImg}`;
+    doc.profileImg = imageUrl;
+  }
+};
+userSchema.post("init", function (doc) {
+  setImageURL(doc);
+});
+userSchema.post("save", function (doc) {
+  setImageURL(doc);
+});
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 12);
   next();
 });
+userSchema.pre("save", function (next) {
+  if (!this.isModified("password")) return next();
+  this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
 
 // Compare entered password with hashed password in DB
-userSchema.methods.correctPassword = async function (
-  enteredPassword,
-  userPassword
-) {
-  return await bcrypt.compare(enteredPassword, userPassword);
+userSchema.methods.correctPassword = function (enteredPassword, userPassword) {
+  return bcrypt.compare(enteredPassword, userPassword);
 };
 
 const UserModel = mongoose.model("User", userSchema);

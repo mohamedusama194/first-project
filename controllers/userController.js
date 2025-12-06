@@ -3,7 +3,23 @@ import UserModel from "../models/userModel.js";
 import ApiError from "../utils/apiError.js";
 import bcrypt from "bcrypt";
 import generateToken from "../utils/generateToken.js";
+import sharp from "sharp";
+import ensureFolderExists from "../utils/createFolder.js";
+import { v4 as uuidv4 } from "uuid";
 
+export const resizeImage = asyncHandler(async (req, res, next) => {
+  const filename = `user-${uuidv4()}-${Date.now()}.jpeg`;
+  if (req.file) {
+    await sharp(req.file.buffer) //image processing for node
+      .resize(600, 600)
+      .toFormat("jpeg")
+      .jpeg({ quality: 80 })
+      .toFile(`${ensureFolderExists("uploads/users")}/${filename}`);
+    //save image into db
+    req.body.profileImg = filename;
+  }
+  next();
+});
 // @desc   Get all users (Admin)
 // @route  GET /api/v1/users
 // @access Admin
@@ -45,11 +61,11 @@ export const getMe = asyncHandler(async (req, res, next) => {
 // @route  PATCH /api/v1/users/:id
 // @access Admin
 export const updateUser = asyncHandler(async (req, res, next) => {
-  const { name, email, role } = req.body;
+  const { name, email } = req.body;
 
   const updatedUser = await UserModel.findByIdAndUpdate(
     req.params.id,
-    { name, email, role },
+    { name, email },
     { new: true }
   ).select("-password");
 
@@ -69,11 +85,11 @@ export const updateUser = asyncHandler(async (req, res, next) => {
 // @route  PATCH /api/v1/users/updateMe
 // @access User
 export const updateMe = asyncHandler(async (req, res, next) => {
-  const { name, email } = req.body;
+  const { name, email, phone, profileImg } = req.body;
 
   const updatedUser = await UserModel.findByIdAndUpdate(
     req.user._id,
-    { name, email },
+    { name, email, phone, profileImg },
     { new: true }
   ).select("-password");
 
@@ -87,17 +103,19 @@ export const updateMe = asyncHandler(async (req, res, next) => {
 // @access User
 
 export const updateMyPassword = asyncHandler(async (req, res, next) => {
-  const { currentPassword, newPassword } = req.body;
-
   const user = await UserModel.findById(req.user._id).select("+password");
 
-  const isCorrect = await bcrypt.compare(currentPassword, user.password);
+  const isCorrect = await bcrypt.compare(
+    req.body.currentPassword,
+    user.password
+  );
   if (!isCorrect) {
-    return next(new ApiError("Current password is wrong!", 400));
+    return next(new ApiError("old password is wrong!", 400));
   }
 
   // replace the new password and save it in db
-  user.password = newPassword;
+  user.password = req.body.password;
+  user.passwordChangedAt = Date.now();
   await user.save();
 
   //generate new token
