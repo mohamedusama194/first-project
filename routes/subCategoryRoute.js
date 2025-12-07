@@ -16,32 +16,20 @@ import {
 } from "../controllers/subCategoryController.js";
 import { protect, allowedTo } from "../middlewares/authMiddleware.js";
 const router = express.Router({ mergeParams: true });
-
+router.use(protect);
 router
   .route("/")
-  .get(protect, createFilterObj, getSubCategories)
+  .get(createFilterObj, getSubCategories)
   .post(
-    protect,
     allowedTo("admin"),
     setCategoryIdForBody,
     createSubCategoryValidator,
     createSubCategory
   );
-
 router
   .route("/:id")
-  .get(protect, getSubCategoryValidator, getSubCategory)
-  .patch(
-    protect,
-    allowedTo("admin"),
-    updateSubCategoryValidator,
-    updateSubCategory
-  )
-  .delete(
-    protect,
-    allowedTo("admin"),
-    deleteSubCategoryValidator,
-    deleteSubCategory
-  );
+  .get(getSubCategoryValidator, getSubCategory)
+  .patch(allowedTo("admin"), updateSubCategoryValidator, updateSubCategory)
+  .delete(allowedTo("admin"), deleteSubCategoryValidator, deleteSubCategory);
 
 export default router;
