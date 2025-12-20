@@ -1,0 +1,18 @@
+import CategoryRoute from "./categoryRoute.js";
+import brandRoute from "./brandRoute.js";
+import SubCategoryRoute from "./subCategoryRoute.js";
+import productRoute from "./productRoute.js";
+import authRoute from "./authRoute.js";
+import userRoute from "./userRoute.js";
+import reviewRoute from "./reviewRoute.js";
+
+const mountRoutes = (app) => {
+  app.use("/api/v1/categories", CategoryRoute);
+  app.use("/api/v1/subcategories", SubCategoryRoute);
+  app.use("/api/v1/brands", brandRoute);
+  app.use("/api/v1/products", productRoute);
+  app.use("/api/v1/auth", authRoute);
+  app.use("/api/v1/users", userRoute);
+  app.use("/api/v1/reviews", reviewRoute);
+};
+export default mountRoutes;
