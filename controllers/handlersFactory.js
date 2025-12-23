@@ -46,8 +46,12 @@ export const getOne = (Model, populateOpt) =>
   });
 export const getAll = (Model) =>
   asyncHandler(async (req, res) => {
+    let filter = {};
+    if (req.filterObj) {
+      filter = req.filterObj;
+    }
     const documentCount = await Model.countDocuments();
-    const apiFeatures = new ApiFeatures(Model.find(), req.query)
+    const apiFeatures = new ApiFeatures(Model.find(filter), req.query)
       .filter()
       .keywordSearch("product")
       .limitFields()
