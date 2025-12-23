@@ -9,6 +9,7 @@ import wishListRoute from "./wishListRoute.js";
 import addressesRoute from "./addressesRoute.js";
 import coponRoute from "./coponRoute.js";
 import cartRoute from "./cartRoute.js";
+import orderRoute from "./orderRoute.js";
 const mountRoutes = (app) => {
   app.use("/api/v1/categories", CategoryRoute);
   app.use("/api/v1/subcategories", SubCategoryRoute);
@@ -21,5 +22,6 @@ const mountRoutes = (app) => {
   app.use("/api/v1/addresses", addressesRoute);
   app.use("/api/v1/copons", coponRoute);
   app.use("/api/v1/cart", cartRoute);
+  app.use("/api/v1/orders", orderRoute);
 };
 export default mountRoutes;
