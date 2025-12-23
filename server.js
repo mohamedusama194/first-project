@@ -1,5 +1,7 @@
 import "./loadEnv.js";
 import express from "express";
+import cors from "cors";
+import compression from "compression";
 import morgan from "morgan";
 import dbConnection from "./config/database.js";
 import globalError from "./middlewares/errorMiddleware.js";
@@ -7,6 +9,8 @@ import mountRoutes from "./routes/index.js";
 //db connection
 dbConnection();
 const app = express();
+app.use(cors());
+app.use(compression());
 app.use(express.json());
 if (process.env.NODE_ENV == "development") {
   app.use(morgan("dev"));
