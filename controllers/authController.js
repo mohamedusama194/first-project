@@ -41,7 +41,7 @@ export const login = asyncHandler(async (req, res, next) => {
   // 2) Check user exists & select password (select:false)
   const user = await UserModel.findOne({ email }).select("+password");
   if (!user) {
-    return next(new ApiError("Incorrect email or password", 401));
+    return next(new ApiError("credentials are invalid", 401));
   }
   if (!user.active == false) {
     return next(
@@ -53,7 +53,7 @@ export const login = asyncHandler(async (req, res, next) => {
   const isCorrect = await user.correctPassword(password, user.password);
 
   if (!isCorrect) {
-    return next(new ApiError("Incorrect email or password", 401));
+    return next(new ApiError("credentials are invalid", 401));
   }
 
   // 4) Generate token

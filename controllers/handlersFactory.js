@@ -3,11 +3,11 @@ import ApiError from "../utils/apiError.js";
 import ApiFeatures from "../utils/apiFeatures.js";
 export const deleteOne = (Model) =>
   asyncHandler(async (req, res, next) => {
-    const document = await Model.findByIdAndDelete(req.params.id);
+    const { id } = req.params;
+    const document = await Model.findByIdAndDelete(id);
     if (!document) {
       return next(new ApiError(`no document with this id ${id}`, 404));
     }
-    await document.deleteOne();
     res.status(204).json();
   });
 export const updateOne = (Model) =>
@@ -22,7 +22,6 @@ export const updateOne = (Model) =>
         new ApiError(`no document with this id ${req.params.id}`, 404)
       );
     }
-    document.save();
     res.status(200).json({ data: document });
   });
 export const createOne = (Model) =>
@@ -44,7 +43,7 @@ export const getOne = (Model, populateOpt) =>
     }
     res.status(200).json({ data: Document });
   });
-export const getAll = (Model) =>
+export const getAll = (Model, searchField) =>
   asyncHandler(async (req, res) => {
     let filter = {};
     if (req.filterObj) {
@@ -53,7 +52,7 @@ export const getAll = (Model) =>
     const documentCount = await Model.countDocuments();
     const apiFeatures = new ApiFeatures(Model.find(filter), req.query)
       .filter()
-      .keywordSearch("product")
+      .keywordSearch(searchField)
       .limitFields()
       .sort()
       .paginate(documentCount);
